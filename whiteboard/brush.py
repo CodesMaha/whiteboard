@@ -42,7 +42,7 @@ class Brush:
     def incr_size(self) -> None:
         self.size += Brush.SIZE_INCR
     def decr_size(self) -> None:
-        self.size -= Brush.SIZE_INCR
+        self.size = max(self.size - Brush.SIZE_INCR, 2)
 
     @staticmethod
     def de_casteljau(p0: P, p1: P, *, precision: int = 2) -> Generator[P, None, None]:
