@@ -28,6 +28,8 @@ async def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
 
+            if event.type == pygame.MULTIGESTURE:
+                brush.size += brush.SIZE_INCR * event.pinched
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 4:
                     brush.incr_size()
@@ -37,6 +39,7 @@ async def main() -> None:
                     brush.is_drawing = True
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
+
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
                 display.fill("black")
 
