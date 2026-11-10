@@ -5,7 +5,7 @@ requires-python = "==3.12.*"
 dependencies = ["pygbag", "pygame-ce"]
 
 [project.urls]
-repository = "https://codeberg.org/MahaCodes/web-whiteboard"
-"github mirror" = "https://github.com/CodesMaha/web-whiteboard"
+repository = "https://codeberg.org/MahaCodes/whiteboard"
+"github mirror" = "https://github.com/CodesMaha/whiteboard"
 
 # [tool.typos]
