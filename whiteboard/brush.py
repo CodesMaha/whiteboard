@@ -5,15 +5,13 @@ type P = pygame.math.Vector2
 
 class Brush:
     """ adjustable properties and functions of drawing brush """
+    SIZE_INCR = 5
+
     def __init__(self, display: pygame.Surface):
-        di = lambda x: (x, x)
+        
         self.display = display
         self.is_drawing = False
         self.size = display.height // 100
-        self.texture = pygame.surface.Surface(di(self.size), pygame.SRCALPHA)
-        pygame.draw.circle(
-            self.texture, "white", di(self.size // 2), self.size // 2
-        ); self.texture_rect = self.texture.get_rect()
 
     @property
     def is_drawing(self) -> bool:
@@ -25,6 +23,26 @@ class Brush:
             self.prev_pos: P | None = pygame.Vector2(pygame.mouse.get_pos())
         else:
             self.prev_pos: None | P = None
+
+    @property
+    def size(self) -> int:
+        return self._size 
+    @size.setter
+    def size(self, new: int) -> None:
+        self._size = new
+        self.update_texture()
+
+    def update_texture(self) -> None:
+        di = lambda x: (x, x)
+        self.texture = pygame.surface.Surface(di(self.size), pygame.SRCALPHA)
+        pygame.draw.circle(
+            self.texture, "white", di(self.size // 2), self.size // 2
+        )
+
+    def incr_size(self) -> None:
+        self.size += Brush.SIZE_INCR
+    def decr_size(self) -> None:
+        self.size -= Brush.SIZE_INCR
 
     @staticmethod
     def de_casteljau(p0: P, p1: P, *, precision: int = 2) -> Generator[P, None, None]:

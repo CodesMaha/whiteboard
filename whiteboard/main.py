@@ -11,9 +11,11 @@ async def main() -> None:
     if platform == "emscripten":
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
+        FPS: int = 60
     else:
         pygame.display.set_icon(pygame.image.load("favicon.png"))
         display = pygame.display.set_mode((1066, 600))
+        FPS: int = 120
     display.fill("black")
 
     brush = Brush(display)
@@ -21,13 +23,18 @@ async def main() -> None:
     
     running = True
     while running:
-        clock.tick(60)
+        clock.tick(FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
             if event.type == pygame.MOUSEBUTTONDOWN:
-                brush.is_drawing = True
+                if event.button == 4:
+                    brush.incr_size()
+                elif event.button == 5:
+                    brush.decr_size()
+                else:
+                    brush.is_drawing = True
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):

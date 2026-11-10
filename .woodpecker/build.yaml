@@ -13,7 +13,7 @@ steps:
     image: python:3.12
     commands:
       - python -m pip install pygbag
-      - python -m pygbag --build --package web.mahacodes.whiteboard whiteboard
+      - python -m pygbag --build --package web.mahacodes.whiteboard --can_close 1 whiteboard
   
   deploy:
     image: codeberg.org/gedankenstuecke/git-pages-woodpecker-plugin:v6

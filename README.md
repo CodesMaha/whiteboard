@@ -4,18 +4,21 @@ minimalist whiteboard run in the browser.
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
 <!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
 
-- [development](#development)
-- [usage](#usage)
+- [features](#features)
+- [building](#building)
 - [dependencies](#dependencies)
 - [license](#license)
 
 <!-- END doctoc -->
 
-# development
-this project is currently under development! for now, it's most a test of `pygbag` and Codeberg pages.
+# features
+this project is still under development, which means new features are still underway!
++ adjusting brush size by scrolling up or down (similar to zooming in or out)
 
-# usage
-first, `cd` to [project directory](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository). To host it on the browser, build it using `pygbag` and click on the resulting page in http://localhost:8000/.
+# building
+although the static build should already be [hosted online](https://mahacodes.codeberg.page/whiteboard/) using [Codeberg Pages](https://docs.codeberg.org/codeberg-pages/), this is a way to rebuild it locally.
+
+first, `cd` to [project directory](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository). to host it on the browser, build it using `pygbag` and click on the resulting page in http://localhost:8000/.
 ```bash
 python -m pygbag src
 ```
