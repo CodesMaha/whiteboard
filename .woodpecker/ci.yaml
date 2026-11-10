@@ -1,0 +1,9 @@
+when:
+  - event: [push, pull_request, manual]
+    branch: main
+
+steps:
+  pre-commit:
+    image: codeberg.org/sp1thas/woodpecker-ci-pre-commit-runner
+    settings:
+      args: "--all-files"

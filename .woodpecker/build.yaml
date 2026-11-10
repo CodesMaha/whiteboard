@@ -1,0 +1,24 @@
+when:
+  - event: [push, manual]
+    branch: main
+
+clone:
+  git:
+    image: woodpeckerci/plugin-git
+    settings:
+      recursive: true
+
+steps:
+  build:
+    image: python:3.12
+    commands:
+      - python -m pip install pygbag
+      - python -m pygbag --build --package web.mahacodes.whiteboard whiteboard
+  
+  deploy:
+    image: codeberg.org/gedankenstuecke/git-pages-woodpecker-plugin:v6
+    settings:
+      TOKEN:
+        from_secret: cbtoken
+      UPLOAD_DIR: whiteboard/build/web
+      SITE_URL: https://mahacodes.codeberg.page/whiteboard/

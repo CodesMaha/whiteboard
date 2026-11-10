@@ -1,0 +1,7 @@
+# pygbag build
+build
+
+.venv
+uv.lock
+.vscode
+__pycache__

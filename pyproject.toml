@@ -1,0 +1,11 @@
+[project]
+name = "web-whiteboard"
+version = "0.1.0"
+requires-python = "==3.12.*"
+dependencies = ["pygbag", "pygame-ce"]
+
+[project.urls]
+repository = "https://codeberg.org/MahaCodes/web-whiteboard"
+"github mirror" = "https://github.com/CodesMaha/web-whiteboard"
+
+# [tool.typos]
