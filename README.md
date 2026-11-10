@@ -1,4 +1,4 @@
-# web whiteboard
+# whiteboard
 minimalist whiteboard run in the browser.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
