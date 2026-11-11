@@ -29,14 +29,16 @@ async def main() -> None:
                 running = False
 
             if event.type == pygame.MULTIGESTURE:
-                brush.size += brush.SIZE_INCR * event.pinched
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 4:
-                    brush.incr_size()
-                elif event.button == 5:
-                    brush.decr_size()
-                else:
-                    brush.is_drawing = True
+                brush.is_size_incr = 2 * (event.pinched > 1) - 1
+                brush.incr_size_mobile()
+            if event.type == pygame.FINGERUP:
+                brush.is_size_incr = 0
+
+            if event.type == pygame.MOUSEWHEEL:
+                brush.incr_size(event.y)
+
+            if (event.type == pygame.MOUSEBUTTONDOWN) and (event.button not in {4, 5}):
+                brush.is_drawing = True
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
 
