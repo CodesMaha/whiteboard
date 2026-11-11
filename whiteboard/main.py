@@ -21,6 +21,7 @@ async def main() -> None:
     brush = Brush(display)
     clock = pygame.time.Clock()
     num_fingers: int = 0
+    brush.init_not_scroll_delay(FPS / 10)
     
     running = True
     while running:
@@ -36,9 +37,11 @@ async def main() -> None:
                 brush.is_size_incr = 2 * (event.pinched > 0) - 1
             if event.type == pygame.FINGERUP:
                 num_fingers = max(num_fingers-1, 0)
+                brush.is_size_incr = 0
 
             if event.type == pygame.MOUSEWHEEL:
                 brush.is_size_incr = event.y
+                brush.reset_not_scroll_delay()
 
             if (
                 event.type == pygame.MOUSEBUTTONDOWN 
@@ -48,15 +51,20 @@ async def main() -> None:
                 brush.is_drawing = True
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
+                brush.is_size_incr = 0
 
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
                 display.fill("black")
 
+        brush.decr_not_scroll_delay(FPS // 30)
+        if brush.is_not_scroll_delay_over():
+            brush.is_size_incr = 0
         brush.incr_size()
         brush.draw_texture()
         if not pygame.event.peek(pygame.FINGERUP):
             brush.draw_preview()
-        brush.is_size_incr = 0
+        else:
+            brush.reset_preview()
         pygame.display.flip()
         await asyncio.sleep(0)
 

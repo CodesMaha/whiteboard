@@ -4,7 +4,7 @@ from typing import Generator
 type P = pygame.math.Vector2
 
 class Brush:
-    SIZE_INCR: int = 10
+    SIZE_INCR: int = 5
     """ adjustable properties and functions of drawing brush """
     def __init__(self, display: pygame.Surface):
         self.display = display
@@ -60,19 +60,12 @@ class Brush:
         """ draw texture at mouse pos if is_drawing """
         if (not self.is_drawing) or (self.is_size_incr):
             return
+        self.reset_preview()
         curr_pos = pygame.Vector2(pygame.mouse.get_pos())
         for p in Brush.de_casteljau(self.prev_pos, curr_pos):
             self.display.blit(self.texture, self.texture.get_rect(center=p))
         self.prev_pos = curr_pos; curr_pos = None
         self._pre_preview = self.display.copy()
-
-    def draw_preview(self) -> None:
-        """ let user preview self.size if self.is_size_incr """
-        self.display.blit(self._pre_preview)
-        pygame.draw.circle(
-            self.display, "white", pygame.mouse.get_pos(), 
-            self.size / 2, 2
-        )
 
     def update_texture(self) -> None:
         di = lambda x: (x, x)
@@ -80,3 +73,22 @@ class Brush:
         pygame.draw.circle(
             self.texture, "white", di(self.size // 2), self.size / 2
         )
+
+    def draw_preview(self) -> None:
+        """ let user preview self.size if self.is_size_incr """
+        self.reset_preview()
+        pygame.draw.circle(
+            self.display, "white", pygame.mouse.get_pos(), 
+            self.size / 2, 2
+        )
+    def reset_preview(self) -> None:
+        self.display.blit(self._pre_preview)
+
+    def init_not_scroll_delay(self, delay_frames: float) -> None:
+        self.max_not_scroll_delay = self.not_scroll_delay = delay_frames
+    def reset_not_scroll_delay(self):
+        self.not_scroll_delay = self.max_not_scroll_delay
+    def decr_not_scroll_delay(self, by_frames: float = 0.5) -> None:
+        self.not_scroll_delay = max(self.not_scroll_delay - by_frames, 0)
+    def is_not_scroll_delay_over(self) -> bool:
+        return self.not_scroll_delay == 0
