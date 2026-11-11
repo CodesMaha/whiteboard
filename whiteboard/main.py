@@ -33,9 +33,9 @@ async def main() -> None:
                 num_fingers += 1
             if (event.type == pygame.MULTIGESTURE) and (event.pinched != 0.0):
                 brush.is_size_incr = 2 * (event.pinched > 0) - 1
+                brush.reset_not_scroll_delay()
             if event.type == pygame.FINGERUP:
                 num_fingers = max(num_fingers-1, 0)
-                brush.is_size_incr = 0
 
             if event.type == pygame.MOUSEWHEEL:
                 brush.is_size_incr = event.y
@@ -49,7 +49,6 @@ async def main() -> None:
                 brush.is_drawing = True
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
-                brush.is_size_incr = 0
 
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
                 display.fill("black")
