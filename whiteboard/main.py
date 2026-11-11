@@ -11,17 +11,15 @@ async def main() -> None:
     if platform == "emscripten":
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
-        FPS: int = 60
+        brush = Brush(display); FPS: int = 60
+        brush.init_not_scroll_delay(FPS / 6)
     else:
         pygame.display.set_icon(pygame.image.load("favicon.png"))
         display = pygame.display.set_mode((1066, 600))
-        FPS: int = 120
-    display.fill("black")
-
-    brush = Brush(display)
+        brush = Brush(display); FPS: int = 120
+        brush.init_not_scroll_delay(FPS / 10)
     clock = pygame.time.Clock()
     num_fingers: int = 0
-    brush.init_not_scroll_delay(FPS / 10)
     
     running = True
     while running:
@@ -55,6 +53,7 @@ async def main() -> None:
 
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
                 display.fill("black")
+                brush.set_reset_preview()
 
         brush.decr_not_scroll_delay(FPS // 30)
         if brush.is_not_scroll_delay_over():

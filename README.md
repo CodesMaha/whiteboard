@@ -20,11 +20,11 @@ although the static build should already be [hosted online](https://mahacodes.co
 
 first, `cd` to [project directory](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository). to host it on the browser, build it using `pygbag` and click on the resulting page in http://localhost:8000/.
 ```bash
-python -m pygbag src
+python -m pygbag whiteboard
 ```
 same command with [uv](https://docs.astral.sh/uv/pip/environments/):
 ```bash
-uv run python -m pygbag src
+uv run python -m pygbag whiteboard
 ```
 
 > if the build keeps loading indefinitely with the following warning, trying again with administrator permissions might help: `WARNING: wasm mimetype unsupported on that system, trying to correct`.
