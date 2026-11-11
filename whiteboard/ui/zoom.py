@@ -1,5 +1,4 @@
 import pygame
-from math import sqrt
 
 class Zoom:
     def __init__(self, scroll_delay_frames: float = 0, not_scroll_delay_frames: float = 0):
@@ -35,17 +34,23 @@ class Zoom:
 class MobileZoom(Zoom):
     def __init__(self, scroll_delay_frames: float = 0, not_scroll_delay_frames: float = 0):
         super().__init__(scroll_delay_frames, not_scroll_delay_frames)
+        self.prev_fingers: dict[int, tuple[float, float]] = {}
         self.fingers: dict[int, tuple[float, float]] = {}
 
     def fingermotion(self, event: pygame.event.Event) -> None:
+        if event.finger_id in self.fingers:
+            self.prev_fingers[event.finger_id] = self.fingers[event.finger_id]
         self.fingers[event.finger_id] = event.x, event.y
     def fingerup(self, event: pygame.event.Event) -> None:
         self.fingers.pop(event.finger_id, None)
     def get_num_fingers(self) -> int:
         return len(self.fingers)
 
-    def get_dist(self) -> float:
-        if self.get_num_fingers() < 2:
+    def get_d_dist(self) -> float:
+        if (self.get_num_fingers() < 2) or (len(self.prev_fingers) < 2):
             return 0.0
         fingers = list(self.fingers.values())[:2]
-        return (fingers[0][0] - fingers[1][0]) + (fingers[0][1] - fingers[1][1])
+        prev_fingers = list(self.prev_fingers.values())[:2]
+        df = abs(fingers[0][0] - fingers[1][0]) + abs(fingers[0][1] - fingers[1][1])
+        di = abs(prev_fingers[0][0] - prev_fingers[1][0]) + abs(prev_fingers[0][1] - prev_fingers[1][1])
+        return df - di
