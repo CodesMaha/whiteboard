@@ -4,10 +4,11 @@ from typing import Generator
 type P = pygame.math.Vector2
 
 class Brush:
-    SIZE_INCR: int = 5
+    SIZE_INCR: int = 10
     """ adjustable properties and functions of drawing brush """
     def __init__(self, display: pygame.Surface):
         self.display = display
+        self._pre_preview = display.copy()
         self.is_drawing = False
         self.size = display.height // 100
         self.is_size_incr = 0
@@ -39,13 +40,15 @@ class Brush:
         self._size = max(new, 2)
         self.update_texture()
 
-    def incr_size(self, coefficient: int, incr: int = 0) -> None:
-        incr = incr or Brush.SIZE_INCR
-        self.size += coefficient * incr
-    def incr_size_mobile(self, incr: int = 0) -> None:
+    def incr_size(self, incr: int = 0) -> None:
+        """ incr brush size by Brush.SIZE_INCR according
+        to self.is_size_incr
+        """
         if not self.is_size_incr:
             return
-        self.incr_size(self.is_size_incr, incr)
+
+        incr = incr or Brush.SIZE_INCR
+        self.size += self.is_size_incr * incr
 
     @staticmethod
     def de_casteljau(p0: P, p1: P, *, precision: int = 2) -> Generator[P, None, None]:
@@ -53,7 +56,7 @@ class Brush:
             t *= 10**(-precision)
             yield (1 - t) * p0 + (t * p1)
 
-    def draw(self) -> None:
+    def draw_texture(self) -> None:
         """ draw texture at mouse pos if is_drawing """
         if (not self.is_drawing) or (self.is_size_incr):
             return
@@ -61,10 +64,19 @@ class Brush:
         for p in Brush.de_casteljau(self.prev_pos, curr_pos):
             self.display.blit(self.texture, self.texture.get_rect(center=p))
         self.prev_pos = curr_pos; curr_pos = None
+        self._pre_preview = self.display.copy()
+
+    def draw_preview(self) -> None:
+        """ let user preview self.size if self.is_size_incr """
+        self.display.blit(self._pre_preview)
+        pygame.draw.circle(
+            self.display, "white", pygame.mouse.get_pos(), 
+            self.size / 2, 2
+        )
 
     def update_texture(self) -> None:
         di = lambda x: (x, x)
         self.texture = pygame.surface.Surface(di(self.size), pygame.SRCALPHA)
         pygame.draw.circle(
-            self.texture, "white", di(self.size // 2), self.size // 2
+            self.texture, "white", di(self.size // 2), self.size / 2
         )

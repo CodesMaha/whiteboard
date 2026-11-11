@@ -29,17 +29,16 @@ async def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
 
+            # mobile support (not properly tested)
             if event.type == pygame.FINGERDOWN:
                 num_fingers += 1
             if (event.type == pygame.MULTIGESTURE) and (event.pinched != 0.0):
                 brush.is_size_incr = 2 * (event.pinched > 0) - 1
-                brush.incr_size_mobile()
             if event.type == pygame.FINGERUP:
                 num_fingers = max(num_fingers-1, 0)
-                brush.is_size_incr = 0
 
             if event.type == pygame.MOUSEWHEEL:
-                brush.incr_size(event.y)
+                brush.is_size_incr = event.y
 
             if (
                 event.type == pygame.MOUSEBUTTONDOWN 
@@ -53,7 +52,11 @@ async def main() -> None:
             if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
                 display.fill("black")
 
-        brush.draw()
+        brush.incr_size()
+        brush.draw_texture()
+        if not pygame.event.peek(pygame.FINGERUP):
+            brush.draw_preview()
+        brush.is_size_incr = 0
         pygame.display.flip()
         await asyncio.sleep(0)
 
