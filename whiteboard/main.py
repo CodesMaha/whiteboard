@@ -59,9 +59,14 @@ async def main() -> None:
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
 
-            if (event.type == pygame.KEYDOWN) and (event.key == pygame.K_c):
-                display.fill("black")
-                brush.set_reset_preview()
+            if event.type == pygame.KEYDOWN:
+                # clear
+                if event.key == pygame.K_c:
+                    display.fill("black")
+                    brush.set_reset_preview()
+                # refresh
+                if (platform == "emscripten") and (event.key == pygame.K_F5):
+                    window.location.reload()
 
         zoom.decr()
         if zoom.is_not_scroll_delay_over():
