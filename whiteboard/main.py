@@ -29,7 +29,7 @@ async def main() -> None:
                 running = False
 
             if event.type == pygame.MULTIGESTURE:
-                brush.is_size_incr = 2 * (event.pinched > 1) - 1
+                brush.is_size_incr = 2 * (event.pinched > 0) - 1
                 brush.incr_size_mobile()
             if event.type == pygame.FINGERUP:
                 brush.is_size_incr = 0
