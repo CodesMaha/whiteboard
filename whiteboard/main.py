@@ -20,6 +20,7 @@ async def main() -> None:
 
     brush = Brush(display)
     clock = pygame.time.Clock()
+    num_fingers: int = 0
     
     running = True
     while running:
@@ -28,16 +29,23 @@ async def main() -> None:
             if event.type == pygame.QUIT:
                 running = False
 
-            if event.type == pygame.MULTIGESTURE:
+            if event.type == pygame.FINGERDOWN:
+                num_fingers += 1
+            if (event.type == pygame.MULTIGESTURE) and (event.pinched != 0.0):
                 brush.is_size_incr = 2 * (event.pinched > 0) - 1
                 brush.incr_size_mobile()
             if event.type == pygame.FINGERUP:
+                num_fingers = max(num_fingers-1, 0)
                 brush.is_size_incr = 0
 
             if event.type == pygame.MOUSEWHEEL:
                 brush.incr_size(event.y)
 
-            if (event.type == pygame.MOUSEBUTTONDOWN) and (event.button not in {4, 5}):
+            if (
+                event.type == pygame.MOUSEBUTTONDOWN 
+                and event.button not in {4, 5}
+                and num_fingers < 2
+            ):
                 brush.is_drawing = True
             if event.type == pygame.MOUSEBUTTONUP:
                 brush.is_drawing = False
