@@ -48,6 +48,4 @@ class MobileZoom(Zoom):
         if self.get_num_fingers() < 2:
             return 0.0
         fingers = list(self.fingers.values())[:2]
-        return sqrt(
-            (fingers[0][0] - fingers[1][0])**2 + (fingers[0][1] - fingers[1][1])**2
-        )
+        return (fingers[0][0] - fingers[1][0]) + (fingers[0][1] - fingers[1][1])

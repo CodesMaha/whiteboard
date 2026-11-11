@@ -39,10 +39,10 @@ async def main() -> None:
             if (
                 event.type == pygame.FINGERMOTION
                 and zoom.is_scroll_delay_over()  
-                and zoom.get_dist() != 0
+                and zoom.get_d_dist() != 0
             ):
                 zoom.fingermotion(event)
-                brush.is_size_incr = 2 * (zoom.get_dist() > 0) - 1
+                brush.is_size_incr = 2 * (zoom.get_d_dist() > 0) - 1
                 zoom.reset()
             if event.type == pygame.FINGERUP:
                 zoom.fingerup(event)
