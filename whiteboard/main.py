@@ -22,7 +22,7 @@ async def main() -> None:
         brush = Brush(display); FPS: int = 120
         zoom = ZoomDelay(0, FPS / 10)
     if is_mobile:
-        zoom = ZoomDelay(FPS / 13, 0)
+        zoom = ZoomDelay(FPS / 24, 0)
     clock = pygame.time.Clock()
     num_fingers: int = 0
     
