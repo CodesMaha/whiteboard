@@ -21,7 +21,11 @@ jobs:
           python-version: 3.12
       - run: |
               python -m pip install pygbag
-              python -m pygbag --build --package web.codesmaha.backup.whiteboard --can_close 1 whiteboard
+              python -m pygbag --build \
+                --package web.codesmaha.backup.whiteboard \
+                --icon .github/workflows/favicon.png \
+                --title "whiteboard (backup)" \
+                --can_close 1 whiteboard
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:
