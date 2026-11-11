@@ -1,4 +1,7 @@
-class ZoomDelay:
+import pygame
+from math import sqrt
+
+class Zoom:
     def __init__(self, scroll_delay_frames: float = 0, not_scroll_delay_frames: float = 0):
         self.max_scroll_delay, self.max_not_scroll_delay = scroll_delay_frames, not_scroll_delay_frames
         self.scroll_delay, self.not_scroll_delay = 0, 0
@@ -25,3 +28,26 @@ class ZoomDelay:
         return self.scroll_delay == 0
     def is_not_scroll_delay_over(self) -> bool:
         return self.not_scroll_delay == 0
+
+    def get_num_fingers(self) -> int:
+        return 1 # mouse
+
+class MobileZoom(Zoom):
+    def __init__(self, scroll_delay_frames: float = 0, not_scroll_delay_frames: float = 0):
+        super().__init__(scroll_delay_frames, not_scroll_delay_frames)
+        self.fingers: dict[int, tuple[float, float]] = {}
+
+    def fingermotion(self, event: pygame.event.Event) -> None:
+        self.fingers[event.finger_id] = event.x, event.y
+    def fingerup(self, event: pygame.event.Event) -> None:
+        self.fingers.pop(event.finger_id, None)
+    def get_num_fingers(self) -> int:
+        return len(self.fingers)
+
+    def get_dist(self) -> float:
+        if self.get_num_fingers() < 2:
+            return 0.0
+        fingers = list(self.fingers.values())[:2]
+        return sqrt(
+            (fingers[0][0] - fingers[1][0])**2 + (fingers[0][1] - fingers[1][1])**2
+        )

@@ -1,3 +1,3 @@
-from .delay import ZoomDelay
+from .zoom import Zoom, MobileZoom
 
-__all__ = sorted(["Zoom"])
+__all__ = sorted(["Zoom", "MobileZoom"])
