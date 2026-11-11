@@ -1,5 +1,5 @@
 import pygame
-from math import ceil, exp
+from math import ceil
 from typing import Generator
 
 type P = pygame.math.Vector2
@@ -50,7 +50,7 @@ class Brush:
             return
 
         incr = incr or Brush.SIZE_INCR
-        self.size += self.is_size_incr * ceil(min(incr * (self.size / 20) ** 1.8, 30))
+        self.size += self.is_size_incr * ceil(min(incr * (self.size / 20) ** 1.8, 10))
 
     @staticmethod
     def de_casteljau(p0: P, p1: P, *, precision: int = 2) -> Generator[P, None, None]:
@@ -92,13 +92,3 @@ class Brush:
     def reset_preview(self) -> None:
         """ draw over brush preview with saved copy of display """
         self.display.blit(self._pre_preview)
-
-    def init_not_scroll_delay(self, delay_frames: float) -> None:
-        """ define the height of the delay after pygame.MOUSEWHEEL ev """
-        self.max_not_scroll_delay = self.not_scroll_delay = delay_frames
-    def reset_not_scroll_delay(self):
-        self.not_scroll_delay = self.max_not_scroll_delay
-    def decr_not_scroll_delay(self, by_frames: float = 0.5) -> None:
-        self.not_scroll_delay = max(self.not_scroll_delay - by_frames, 0)
-    def is_not_scroll_delay_over(self) -> bool:
-        return self.not_scroll_delay == 0
