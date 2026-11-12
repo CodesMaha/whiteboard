@@ -1,5 +1,5 @@
 import pygame
-from math import ceil
+from math import sqrt, ceil
 from typing import Generator
 
 type P = pygame.math.Vector2
@@ -53,10 +53,15 @@ class Brush:
         self.size += self.is_size_incr * ceil(min(incr * (self.size / 20) ** 1.8, 10))
 
     @staticmethod
-    def de_casteljau(p0: P, p1: P, *, precision: int = 2) -> Generator[P, None, None]:
-        """ points lying on a straight line segment """
-        for t in range(10**precision + 1):
-            t *= 10**(-precision)
+    def dist(p0: P, p1: P) -> float:
+        return sqrt((p0.x - p1.x)**2 + (p0.y - p1.y)**2)
+    def de_casteljau(self, p0: P, p1: P) -> Generator[P, None, None]:
+        """ points lying on a straight line segment; no. points based on
+        Brush.dist between pts and self.size """
+        total = (self.dist(p0, p1) or 1) * self.size; t = -1/total
+        for _ in range(ceil(total)):
+            t += 1/total
+            if t > 1: break
             yield (1 - t) * p0 + (t * p1)
 
     def draw_texture(self) -> None:
@@ -65,7 +70,7 @@ class Brush:
             return
         self.reset_preview()
         curr_pos = pygame.Vector2(pygame.mouse.get_pos())
-        for p in Brush.de_casteljau(self.prev_pos, curr_pos):
+        for p in self.de_casteljau(self.prev_pos, curr_pos):
             self.display.blit(self.texture, self.texture.get_rect(center=p))
         self.prev_pos = curr_pos; curr_pos = None
         self._pre_preview = self.display.copy()
