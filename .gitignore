@@ -1,5 +1,6 @@
 # pygbag build
 build
+default.tmpl
 
 .venv
 uv.lock

@@ -13,6 +13,7 @@ steps:
     image: python:3.12
     commands:
       - python -m pip install pygbag
+      - python tmpl_getter.py
       - python -m pygbag --build --package web.mahacodes.whiteboard --can_close 1 whiteboard
   
   deploy:

@@ -1,88 +1,81 @@
-from sys import platform
+from sys import platform as sys_platform
 from brush import Brush
+from event_handler import *
 from ui import *
 import asyncio
 import pygame
 
-async def main() -> None:
-    """ entrypoint for pygbag with main loop """
-    pygame.display.init()
-    pygame.display.set_caption("whiteboard")
+class App:
+    def __init__(self) -> None:
+        pygame.display.init()
+        pygame.display.set_caption("whiteboard")
 
-    if platform == "emscripten":
+        if sys_platform == "emscripten":
+            self.emscripten_setup()
+        else:
+            self.native_setup()
+
+        self.clock = pygame.time.Clock()
+        App.FPS = self.events.FPS
+
+    def emscripten_setup(self) -> None:
         from platform import window
-        is_mobile = window.screen.width < window.screen.height
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
-        brush = Brush(display); FPS: int = 60
-        zoom = Zoom(0, FPS / 6)
-    else:
-        is_mobile = False # not tested at all
+        brush = Brush(display) 
+        if window.screen.width < window.screen.height: # mobile
+            self.events = TouchscreenEventHandler(display, brush, window)
+        else: self.events = WebEventHandler(display, brush, window)
+
+    def native_setup(self) -> None:
         pygame.display.set_icon(pygame.image.load("favicon.png"))
         display = pygame.display.set_mode((1066, 600))
-        brush = Brush(display); FPS: int = 120
-        zoom = Zoom(0, FPS / 10)
-    if is_mobile:
-        zoom = MobileZoom(FPS / 24, 0)
-    zoom.init_delay_decr(FPS / 30)
-    clock = pygame.time.Clock()
-    
-    running = True
-    while running:
-        clock.tick(FPS)
+        brush = Brush(display); self.events = EventHandler(display, brush)
+
+    def step(self):
+        self.clock.tick(App.FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                running = False
+                return False
 
-            # mobile support (not properly tested)
+            # mobile/touchscreen support (not properly tested)
             if event.type == pygame.FINGERDOWN:
-                zoom.fingermotion(event)
-            if (
-                event.type == pygame.FINGERMOTION
-                and zoom.is_scroll_delay_over()  
-                and zoom.get_d_dist() != 0
-            ):
-                zoom.fingermotion(event)
-                brush.is_size_incr = 2 * (zoom.get_d_dist() > 0) - 1
-                zoom.reset()
+                self.events.fingerdown(event)
+            if event.type == pygame.MULTIGESTURE:
+                self.events.multigesture(event)
             if event.type == pygame.FINGERUP:
-                zoom.fingerup(event)
+                self.events.fingerup(event)
 
-            if event.type == pygame.MOUSEWHEEL and zoom.is_scroll_delay_over():
-                brush.is_size_incr = event.y
-                zoom.reset()
+            if event.type == pygame.MOUSEWHEEL:
+                self.events.mousewheel(event)
 
-            if (
-                event.type == pygame.MOUSEBUTTONDOWN 
-                and event.button not in {4, 5}
-                and zoom.get_num_fingers() < 2
-            ):
-                brush.is_drawing = True
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self.events.mousebuttondown(event)
             if event.type == pygame.MOUSEBUTTONUP:
-                brush.is_drawing = False
+                self.events.mousebuttonup(event)
 
             if event.type == pygame.KEYDOWN:
-                # clear
-                if event.key == pygame.K_c:
-                    display.fill("black")
-                    brush.set_reset_preview()
-                # refresh
-                if (platform == "emscripten") and (event.key == pygame.K_F5):
-                    window.location.reload()
+                self.events.keydown(event)
 
-        zoom.decr()
-        if zoom.is_not_scroll_delay_over():
-            brush.is_size_incr = 0
-        if zoom.is_scroll_delay_over():
-            brush.incr_size()
-        brush.draw_texture()
-        if not pygame.event.peek(pygame.FINGERUP):
-            brush.draw_preview()
-        else:
-            brush.reset_preview()
+        self.events.update()
         pygame.display.flip()
-        await asyncio.sleep(0)
+        return True
 
-    pygame.quit()
+async def main() -> None:
+    """ entrypoint for pygbag with main loop """
+    try:
+        app = App()
+        while app.step():
+            await asyncio.sleep(0)
+
+    except Exception:
+        if sys_platform == "emscripten":
+            from platform import window
+            from traceback import format_exc
+            window.alert(format_exc()[-100:]) # otherwise hidden
+        else: raise # leave it
+
+    finally:
+        pygame.quit()
 
 if __name__ == "__main__":
     asyncio.run(main())
