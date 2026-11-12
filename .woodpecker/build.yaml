@@ -10,7 +10,7 @@ clone:
 
 steps:
   build:
-    image: python:3.12
+    image: python:3.13
     commands:
       - python -m pip install pygbag
       - python tmpl_getter.py
