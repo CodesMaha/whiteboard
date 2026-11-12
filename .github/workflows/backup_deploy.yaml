@@ -26,7 +26,8 @@ jobs:
                 --package web.codesmaha.backup.whiteboard \
                 --icon .github/workflows/favicon.png \
                 --title "whiteboard (backup)" \
-                --can_close 1 whiteboard
+                --ume_block 0 --can_close 1 \
+                whiteboard
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v4
         with:

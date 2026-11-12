@@ -14,7 +14,11 @@ steps:
     commands:
       - python -m pip install pygbag
       - python tmpl_getter.py
-      - python -m pygbag --build --package web.mahacodes.whiteboard --can_close 1 whiteboard
+      - >
+        python -m pygbag --build 
+        --package web.mahacodes.whiteboard 
+        --ume_block 0 --can_close 1 
+        whiteboard
   
   deploy:
     image: codeberg.org/gedankenstuecke/git-pages-woodpecker-plugin:v6
