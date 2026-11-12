@@ -1,3 +1,5 @@
+""" texture blit onto display, dest pygame.mouse """
+
 import pygame
 from math import sqrt, ceil
 from typing import Generator
@@ -5,8 +7,8 @@ from typing import Generator
 type P = pygame.math.Vector2
 
 class Brush:
-    SIZE_INCR: int = 2
     """ adjustable properties and functions of drawing brush """
+    SIZE_INCR: int = 2
     def __init__(self, display: pygame.Surface):
         self.display = display
         self.set_reset_preview()
@@ -16,6 +18,7 @@ class Brush:
 
     @property
     def is_drawing(self) -> bool:
+        """ whether or not to track pygame.mouse to draw """
         return self._is_drawing
     @is_drawing.setter
     def is_drawing(self, new: bool) -> None:
@@ -27,7 +30,7 @@ class Brush:
 
     @property
     def is_size_incr(self) -> int:
-        """0 False; 1 True; -1 decr"""
+        """ 0 False; 1 True; -1 decr for self.size """
         return self._is_size_incr
     @is_size_incr.setter
     def is_size_incr(self, new: int) -> None:
@@ -53,14 +56,14 @@ class Brush:
         self.size += self.is_size_incr * ceil(min(incr * (self.size / 20) ** 1.8, 10))
 
     @staticmethod
-    def dist(p0: P, p1: P) -> float:
-        return sqrt((p0.x - p1.x)**2 + (p0.y - p1.y)**2)
+    def dist(p0: P, p1: P) -> float: return sqrt((p0.x - p1.x)**2 + (p0.y - p1.y)**2)
     def de_casteljau(self, p0: P, p1: P) -> Generator[P, None, None]:
         """ points lying on a straight line segment; no. points based on
-        Brush.dist between pts and self.size """
+        Brush.dist between pts and self.size 
+        """
         total = (self.dist(p0, p1) or 1) * self.size; t = -1/total
         for _ in range(ceil(total)):
-            t += 1/total
+            t += 1/total # t b/w 0 && 1
             if t > 1: break
             yield (1 - t) * p0 + (t * p1)
 

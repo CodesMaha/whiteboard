@@ -1,3 +1,5 @@
+""" handling events (according to detected os) individually """
+
 import pygame
 from graphics import Brush
 from logic import NotScrollDelay

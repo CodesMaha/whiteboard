@@ -1,3 +1,5 @@
+""" where the entrypoint for pygbag lies by default """
+
 from sys import platform as sys_platform
 from graphics import Brush
 from logic import *
@@ -18,20 +20,23 @@ class App:
         App.FPS = self.events.FPS
 
     def emscripten_setup(self) -> None:
+        """ extra init for browswer (or mobile web specifically) """
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
         window.Module.canvas2d.style.width, window.Module.canvas2d.style.width = display.size
-        brush = Brush(display) 
+        brush = Brush(display) # TODO: better mobile/touchscreen detection 
         if window.screen.width < window.screen.height: # mobile
             self.events = TouchscreenEventHandler(display, brush, window)
         else: self.events = WebEventHandler(display, brush, window)
 
     def native_setup(self) -> None:
+        """ extra init for native, local, or direct interpret """
         pygame.display.set_icon(pygame.image.load("favicon.png"))
         display = pygame.display.set_mode((1066, 600))
         brush = Brush(display); self.events = EventHandler(display, brush)
 
     def step(self):
+        """ inside usual main loop; sleep outside """
         self.clock.tick(App.FPS)
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

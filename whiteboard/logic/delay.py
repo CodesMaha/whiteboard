@@ -1,4 +1,10 @@
+""" extra delay functionality beyond Clock.tick """
+
 class NotScrollDelay:
+    """ delay after mouse scroll (pygame.MOUSEWHEEL) is detected 
+    (or pygame.MULTIGESTURE pinched for mobile). this is currently used for
+    brush size changes 
+    """
     def __init__(self, not_scroll_delay_frames: float = 0):
         self.max_not_scroll_delay = not_scroll_delay_frames
         self.not_scroll_delay: float = 0.0
