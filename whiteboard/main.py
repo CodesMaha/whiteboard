@@ -20,6 +20,7 @@ class App:
     def emscripten_setup(self) -> None:
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
+        window.Module.canvas2d.style.width, window.Module.canvas2d.style.width = display.size
         brush = Brush(display) 
         if window.screen.width < window.screen.height: # mobile
             self.events = TouchscreenEventHandler(display, brush, window)
