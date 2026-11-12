@@ -1,7 +1,6 @@
 from sys import platform as sys_platform
-from brush import Brush
-from event_handler import *
-from ui import *
+from graphics import Brush
+from logic import *
 import asyncio
 import pygame
 

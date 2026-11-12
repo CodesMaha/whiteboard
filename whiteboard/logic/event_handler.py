@@ -1,19 +1,19 @@
 import pygame
-from brush import Brush
-from ui import Zoom
+from graphics import Brush
+from logic import NotScrollDelay
 
 class EventHandler:
     """ handle native events (acting as base class) """
     FPS = 120
     def __init__(self, display: pygame.Surface, brush: Brush):
         self.display, self.brush = display, brush
-        self.zoom = Zoom(0, self.FPS / 10)
-        self.zoom.init_delay_decr(self.FPS / 30)
+        self.not_zoom_delay = NotScrollDelay(self.FPS / 10)
+        self.not_zoom_delay.init_delay_decr(self.FPS / 30)
 
     def update(self) -> None:
         """ custom calls (flip and sleep outside) """
-        self.zoom.decr_not_scroll_delay()
-        if self.zoom.is_not_scroll_delay_over():
+        self.not_zoom_delay.decr()
+        if self.not_zoom_delay.is_over():
             self.brush.is_size_incr = 0
         self.brush.incr_size()
         self.brush.draw_texture()
@@ -22,7 +22,7 @@ class EventHandler:
     def mousewheel(self, event: pygame.Event) -> None:
         if event.touch: return
         self.brush.is_size_incr = event.y
-        self.zoom.reset_not_scroll_delay()
+        self.not_zoom_delay.reset()
 
     def mousebuttondown(self, event: pygame.Event) -> None:
         if (event.button in {4, 5}) or (event.touch): return
@@ -51,7 +51,7 @@ class WebEventHandler(EventHandler):
     FPS = 60 # browser limit
     def __init__(self, display: pygame.Surface, brush: Brush, window):
         super().__init__(display, brush)
-        self.zoom.not_scroll_delay = WebEventHandler.FPS / 6
+        self.not_zoom_delay.max_not_scroll_delay = WebEventHandler.FPS / 6
         self.window = window
 
     def keydown(self, event):
@@ -66,11 +66,10 @@ class TouchscreenEventHandler(WebEventHandler):
         self.fingers: set[int] = set()
 
     def update(self):
-        self.zoom.decr()
-        if self.zoom.is_not_scroll_delay_over():
+        self.not_zoom_delay.decr()
+        if self.not_zoom_delay.is_over():
             self.brush.is_size_incr = 0
-        if self.zoom.is_scroll_delay_over():
-            self.brush.incr_size()
+        self.brush.incr_size()
         self.brush.draw_texture()
         if len(self.fingers) > 1: # when not drawing
             self.brush.draw_preview()
@@ -84,7 +83,7 @@ class TouchscreenEventHandler(WebEventHandler):
     def multigesture(self, event):
         if event.pinched == 0.0: return
         self.brush.is_size_incr = 2 * (event.pinched > 0) - 1
-        self.zoom.reset()
+        self.not_zoom_delay.reset()
 
     def fingerup(self, event):
         self.fingers.discard(event.finger_id)
