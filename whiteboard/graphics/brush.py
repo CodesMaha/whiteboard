@@ -61,7 +61,7 @@ class Brush:
         """ points lying on a straight line segment; no. points based on
         Brush.dist between pts and self.size 
         """
-        total = (self.dist(p0, p1) or 1) * self.size; t = -1/total
+        total = (self.dist(p0, p1) or 1) / (self.size / 4); t = -1/total
         for _ in range(ceil(total)):
             t += 1/total # t b/w 0 && 1
             if t > 1: break
