@@ -1,6 +1,7 @@
 """ handling events (according to detected os) individually """
 
 import pygame
+from logic.key_gesture import KeypressHandler
 from graphics import Brush
 from logic import NotScrollDelay
 
@@ -11,6 +12,7 @@ class EventHandler:
         self.display, self.brush = display, brush
         self.not_zoom_delay = NotScrollDelay(self.FPS / 10)
         self.not_zoom_delay.init_delay_decr(self.FPS / 30)
+        self.keypresses = KeypressHandler(self)
 
     def update(self) -> None:
         """ custom calls (flip and sleep outside) """
@@ -35,9 +37,7 @@ class EventHandler:
         self.brush.is_drawing = False
 
     def keydown(self, event: pygame.Event) -> None:
-        if event.key == pygame.K_c:
-            self.display.fill("black")
-            self.brush.set_reset_preview()
+        self.keypresses.keydown(event)
 
     def fingerdown(self, event: pygame.Event) -> None:
         pass
@@ -58,8 +58,7 @@ class WebEventHandler(EventHandler):
 
     def keydown(self, event):
         super().keydown(event)
-        if event.key == pygame.K_F5:
-            self.window.location.reload()
+        self.keypresses.emscripten_keydown(event)
 
 class TouchscreenEventHandler(WebEventHandler):
     """ handle web and touchscreen events (from pygbag) """
