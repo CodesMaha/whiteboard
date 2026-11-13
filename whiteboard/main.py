@@ -20,7 +20,7 @@ class App:
         App.FPS = self.events.FPS
 
     def emscripten_setup(self) -> None:
-        """ extra init for browswer (or mobile web specifically) """
+        """ extra init for browser (or mobile web specifically) """
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
         window.Module.canvas2d.style.width, window.Module.canvas2d.style.width = display.size
