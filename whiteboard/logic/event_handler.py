@@ -65,7 +65,7 @@ class TouchscreenEventHandler(WebEventHandler):
         self.before_zoom_delay = Delay(self.FPS / 10, self.FPS / 60)
         self.before_zoom_delay.delay = self.before_zoom_delay.max_delay
         self.zoom_after_clear_delay = Delay(self.FPS / 2, self.FPS / 60)
-        self.draw_after_clear_delay = Delay(self.FPS / 20, self.FPS / 60)
+        self.before_clear_delay = Delay(self.FPS / 20, self.FPS / 60)
 
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
@@ -73,7 +73,7 @@ class TouchscreenEventHandler(WebEventHandler):
 
     def update(self):
         self.before_zoom_delay.decr(); self.zoom_after_clear_delay.decr()
-        self.draw_after_clear_delay.decr()
+        self.before_clear_delay.decr()
         self.brush.incr_size()
         self.brush.draw_texture()
         if self.brush.is_size_incr: # when not drawing
@@ -81,12 +81,11 @@ class TouchscreenEventHandler(WebEventHandler):
         self.brush.is_size_incr = 0
 
     def fingerdown(self, event: pygame.Event):
-        if not self.zoom_after_clear_delay.is_over(): return
         self.fingers[event.finger_id] = None
         self.brush.is_drawing = len(self.fingers) == 1 # dot (single click)
 
     def fingermotion(self, event):
-        if not self.draw_after_clear_delay.is_over(): return
+        if not self.before_clear_delay.is_over(): return
         self.fingers[event.finger_id] = event.dx, event.dy
         if len(self.fingers) == 3:
             self.gestures.fingermotion_3(event)
