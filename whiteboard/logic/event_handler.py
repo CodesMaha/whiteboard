@@ -1,7 +1,7 @@
 """ handling events (according to detected os) individually """
 
 import pygame
-from logic.key_gesture import KeypressHandler
+from logic.key_gesture import KeypressHandler, GestureHandler
 from graphics import Brush
 from logic import NotScrollDelay
 
@@ -42,6 +42,9 @@ class EventHandler:
     def fingerdown(self, event: pygame.Event) -> None:
         pass
 
+    def fingermotion(self, event: pygame.Event) -> None:
+        pass
+
     def multigesture(self, event: pygame.Event) -> None:
         pass
 
@@ -64,7 +67,9 @@ class TouchscreenEventHandler(WebEventHandler):
     """ handle web and touchscreen events (from pygbag) """
     def __init__(self, display, brush, window):
         super().__init__(display, brush, window)
-        self.fingers: set[int] = set()
+        self.gestures = GestureHandler(self)
+        # dict[finger_id, tuple[dx, dy]] from fingermotion
+        self.fingers: dict[int, tuple[int, int] | None] = {}
 
     def update(self):
         self.not_zoom_delay.decr()
@@ -75,18 +80,22 @@ class TouchscreenEventHandler(WebEventHandler):
         if len(self.fingers) > 1: # when not drawing
             self.brush.draw_preview()
 
-    def fingerdown(self, event):
-        self.fingers.add(event.finger_id)
-        if len(self.fingers) > 1: # no multi-finger drawing
-            self.brush.is_drawing = False
-        else: self.brush.is_drawing = True
+    def fingerdown(self, event: pygame.Event):
+        self.fingers[event.finger_id] = None
+        self.brush.is_drawing = len(self.fingers) == 1 # dot (single click)
+
+    def fingermotion(self, event):
+        self.fingers[event.finger_id] = event.dx, event.dy
+        if len(self.fingers) == 3:
+            self.gestures.fingermotion_3(event)
 
     def multigesture(self, event):
+        self.brush.is_drawing = False # no multi-finger drawing
         if event.pinched == 0.0: return
-        self.brush.is_size_incr = 2 * (event.pinched > 0) - 1
-        self.not_zoom_delay.reset()
+        if event.num_fingers == 2: 
+            self.gestures.multigesture_2(event)
 
     def fingerup(self, event):
-        self.fingers.discard(event.finger_id)
+        self.fingers.pop(event.finger_id, None)
         if len(self.fingers) == 0: 
             self.brush.is_drawing = 0
