@@ -1,7 +1,7 @@
 """ texture blit onto display, dest pygame.mouse """
 
 import pygame
-from math import sqrt, ceil
+from math import ceil
 from typing import Generator
 
 type P = pygame.math.Vector2
@@ -56,7 +56,7 @@ class Brush:
         self.size += self.is_size_incr * ceil(min(incr * (self.size / 20) ** 1.8, 10))
 
     @staticmethod
-    def dist(p0: P, p1: P) -> float: return sqrt((p0.x - p1.x)**2 + (p0.y - p1.y)**2)
+    def dist(p0: P, p1: P) -> float: return (p0 - p1).length()
     def de_casteljau(self, p0: P, p1: P) -> Generator[P, None, None]:
         """ points lying on a straight line segment; no. points based on
         Brush.dist between pts and self.size 
