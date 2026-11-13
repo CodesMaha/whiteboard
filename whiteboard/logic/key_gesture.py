@@ -31,7 +31,6 @@ class GestureHandler:
 
     def multigesture_2(self, event: pygame.Event) -> None:
         self.events.brush.is_size_incr = 2 * (event.pinched > 0) - 1
-        self.events.before_zoom_delay.reset()
 
     def fingermotion_3(self, _: pygame.Event) -> None:
         dy_positive = []

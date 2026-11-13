@@ -61,19 +61,16 @@ class TouchscreenEventHandler(WebEventHandler):
     """ handle web and touchscreen events (from pygbag) """
     def __init__(self, display, brush, window):
         super().__init__(display, brush, window)
-        # for it to not interfere with three-finger gesture
-        self.before_zoom_delay = Delay(self.FPS / 10, self.FPS / 60)
-        self.before_zoom_delay.delay = self.before_zoom_delay.max_delay
-        self.zoom_after_clear_delay = Delay(self.FPS / 2, self.FPS / 60)
-        self.before_clear_delay = Delay(self.FPS / 20, self.FPS / 60)
+        # avoid interfering between features
+        self.before_delay = Delay(self.FPS / 20, self.FPS / 60)
+        self.after_delay = Delay(self.FPS / 20, self.FPS / 60)
 
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
         self.gestures = GestureHandler(self)
 
     def update(self):
-        self.before_zoom_delay.decr(); self.zoom_after_clear_delay.decr()
-        self.before_clear_delay.decr()
+        self.before_delay.decr(); self.after_delay.decr()
         self.brush.incr_size()
         self.brush.draw_texture()
         if self.brush.is_size_incr: # when not drawing
@@ -81,28 +78,31 @@ class TouchscreenEventHandler(WebEventHandler):
 
     def fingerdown(self, event: pygame.Event):
         self.fingers[event.finger_id] = None
-        self.brush.is_drawing = len(self.fingers) == 1 # dot (single click)
+        if self.before_delay.is_over(): # dot (single click)
+            self.brush.is_drawing = len(self.fingers) == 1
+            self.after_delay.reset()
 
     def fingermotion(self, event):
-        if not self.before_clear_delay.is_over(): return
+        if not self.after_delay.is_over(): return
         self.fingers[event.finger_id] = event.dx, event.dy
         if len(self.fingers) == 3:
             self.gestures.fingermotion_3(event)
-            self.zoom_after_clear_delay.reset()
+            self.after_delay.reset()
 
     def multigesture(self, event):
         self.brush.is_drawing = False # no multi-finger drawing
         if event.pinched == 0.0: return
         if (
             event.num_fingers == 2 
-            and self.before_zoom_delay.is_over()
-            and self.zoom_after_clear_delay.is_over()
+            and self.after_delay.is_over()
+            and self.before_delay.is_over()
         ): 
             self.gestures.multigesture_2(event)
+            self.after_delay.reset()
 
     def fingerup(self, event):
         self.fingers.pop(event.finger_id, None)
         # at least one finger to draw
         if len(self.fingers) == 0:
             self.brush.is_drawing = False
-            self.before_zoom_delay.reset()
+            self.before_delay.reset()
