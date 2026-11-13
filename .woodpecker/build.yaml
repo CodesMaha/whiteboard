@@ -12,8 +12,9 @@ steps:
   build:
     image: python:3.13
     commands:
-      - python -m pip install pygbag
+      - python -m pip install --root-user-action=ignore pygbag
       - python tmpl_getter.py
+      # - apt-get update && apt-get install -y ffmpeg
       - >
         python -m pygbag --build 
         --package web.mahacodes.whiteboard 
