@@ -15,9 +15,9 @@ class EventHandler:
     def update(self) -> None:
         """ custom calls (flip and sleep outside) """
         self.brush.incr_size()
-        self.brush.is_size_incr = 0
         self.brush.draw_texture()
         self.brush.draw_preview()
+        self.brush.is_size_incr = 0
 
     def mousewheel(self, event: pygame.Event) -> None:
         if event.touch: return
@@ -75,10 +75,10 @@ class TouchscreenEventHandler(WebEventHandler):
         self.before_zoom_delay.decr(); self.zoom_after_clear_delay.decr()
         self.draw_after_clear_delay.decr()
         self.brush.incr_size()
-        self.brush.is_size_incr = 0
         self.brush.draw_texture()
         if self.brush.is_size_incr: # when not drawing
             self.brush.draw_preview()
+        self.brush.is_size_incr = 0
 
     def fingerdown(self, event: pygame.Event):
         if not self.zoom_after_clear_delay.is_over(): return
