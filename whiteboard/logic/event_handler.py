@@ -60,15 +60,11 @@ class TouchscreenEventHandler(WebEventHandler):
     """ handle web and touchscreen events (from pygbag) """
     def __init__(self, display, brush, window):
         super().__init__(display, brush, window)
-        # avoid zoom interfering with clear
-        self.zoom_after_clear_delay = Delay(self.FPS / 20, self.FPS / 60)
-
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
         self.gestures = GestureHandler(self)
 
     def update(self):
-        self.zoom_after_clear_delay.decr()
         self.brush.incr_size()
         self.brush.draw_texture()
         if self.brush.is_size_incr: # when not drawing
@@ -80,17 +76,14 @@ class TouchscreenEventHandler(WebEventHandler):
 
     def fingermotion(self, event):
         self.fingers[event.finger_id] = event.dx, event.dy
+        self.brush.is_drawing = len(self.fingers) == 1
         if len(self.fingers) == 3:
             self.gestures.fingermotion_3(event)
-            self.zoom_after_clear_delay.reset()
 
     def multigesture(self, event):
-        self.brush.is_drawing = False # no multi-finger drawing
         if event.pinched == 0.0: return
-        if (
-            event.num_fingers == 2 
-            and self.zoom_after_clear_delay.is_over()
-        ): 
+        self.brush.is_drawing = False # no multi-finger drawing
+        if (event.num_fingers == 2): 
             self.gestures.multigesture_2(event)
 
     def fingerup(self, event):
