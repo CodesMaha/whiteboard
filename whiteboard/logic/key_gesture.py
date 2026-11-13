@@ -1,7 +1,8 @@
 """ configure actions for keypresses """
 
 from typing import TYPE_CHECKING
-if TYPE_CHECKING: from logic.event_handler import EventHandler
+if TYPE_CHECKING: 
+    from logic.event_handler import EventHandler, TouchscreenEventHandler
 
 import pygame
 
@@ -24,13 +25,13 @@ class GestureHandler:
     """ handle some equivalents to KeypressHandler but
     for mobile/touchscreen. exceptions can be handled graphically
     """
-    def __init__(self, mobile_event_handler: 'EventHandler'):
+    def __init__(self, mobile_event_handler: 'TouchscreenEventHandler'):
         self.events = mobile_event_handler
         self.fingers: dict[int, tuple[int, int] | None] = self.events.fingers
 
     def multigesture_2(self, event: pygame.Event) -> None:
         self.events.brush.is_size_incr = 2 * (event.pinched > 0) - 1
-        self.events.not_zoom_delay.reset()
+        self.events.before_zoom_delay.reset()
 
     def fingermotion_3(self, _: pygame.Event) -> None:
         dy_positive = []
