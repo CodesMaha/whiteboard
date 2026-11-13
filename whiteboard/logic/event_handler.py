@@ -62,15 +62,14 @@ class TouchscreenEventHandler(WebEventHandler):
     def __init__(self, display, brush, window):
         super().__init__(display, brush, window)
         # avoid interfering between features
-        self.before_delay = Delay(self.FPS / 20, self.FPS / 60)
-        self.after_delay = Delay(self.FPS / 20, self.FPS / 60)
+        self.delay = Delay(self.FPS / 20, self.FPS / 60)
 
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
         self.gestures = GestureHandler(self)
 
     def update(self):
-        self.before_delay.decr(); self.after_delay.decr()
+        self.delay.decr()
         self.brush.incr_size()
         self.brush.draw_texture()
         if self.brush.is_size_incr: # when not drawing
@@ -78,31 +77,28 @@ class TouchscreenEventHandler(WebEventHandler):
 
     def fingerdown(self, event: pygame.Event):
         self.fingers[event.finger_id] = None
-        if self.before_delay.is_over(): # dot (single click)
-            self.brush.is_drawing = len(self.fingers) == 1
-            self.after_delay.reset()
+        self.brush.is_drawing = len(self.fingers) == 1 # dot (single click)
 
     def fingermotion(self, event):
-        if not self.after_delay.is_over(): return
+        if not self.delay.is_over(): return
         self.fingers[event.finger_id] = event.dx, event.dy
+        self.brush.is_drawing = len(self.fingers) == 1
         if len(self.fingers) == 3:
             self.gestures.fingermotion_3(event)
-            self.after_delay.reset()
+            self.delay.reset()
 
     def multigesture(self, event):
         self.brush.is_drawing = False # no multi-finger drawing
         if event.pinched == 0.0: return
         if (
             event.num_fingers == 2 
-            and self.after_delay.is_over()
-            and self.before_delay.is_over()
+            and self.delay.is_over()
         ): 
             self.gestures.multigesture_2(event)
-            self.after_delay.reset()
 
     def fingerup(self, event):
         self.fingers.pop(event.finger_id, None)
         # at least one finger to draw
         if len(self.fingers) == 0:
             self.brush.is_drawing = False
-            self.before_delay.reset()
+            self.delay.reset()
