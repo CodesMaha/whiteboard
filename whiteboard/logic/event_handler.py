@@ -91,3 +91,4 @@ class TouchscreenEventHandler(WebEventHandler):
         # at least one finger to draw
         if len(self.fingers) == 0:
             self.brush.is_drawing = False
+            self.brush.is_size_incr = 0
