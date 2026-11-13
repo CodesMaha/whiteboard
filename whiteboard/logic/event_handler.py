@@ -76,7 +76,7 @@ class TouchscreenEventHandler(WebEventHandler):
 
     def update(self):
         self.not_zoom_delay.decr()
-        self.zoom_delay.decr(); self.other_after_clear_delay()
+        self.zoom_delay.decr(); self.other_after_clear_delay.decr()
         if self.not_zoom_delay.is_over():
             self.brush.is_size_incr = 0
         self.brush.incr_size()
