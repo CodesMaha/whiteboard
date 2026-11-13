@@ -65,7 +65,7 @@ class TouchscreenEventHandler(WebEventHandler):
         self.before_zoom_delay = Delay(self.FPS / 10, self.FPS / 60)
         self.before_zoom_delay.delay = self.before_zoom_delay.max_delay
         self.zoom_after_clear_delay = Delay(self.FPS / 2, self.FPS / 60)
-        self.draw_after_clear_delay = Delay(self.FPS / 12, self.FPS / 60)
+        self.draw_after_clear_delay = Delay(self.FPS / 20, self.FPS / 60)
 
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
