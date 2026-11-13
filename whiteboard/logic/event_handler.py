@@ -10,8 +10,7 @@ class EventHandler:
     FPS = 120
     def __init__(self, display: pygame.Surface, brush: Brush):
         self.display, self.brush = display, brush
-        self.not_zoom_delay = Delay(self.FPS / 10)
-        self.not_zoom_delay.init_delay_decr(self.FPS / 30)
+        self.not_zoom_delay = Delay(self.FPS / 10, self.FPS / 30)
         self.keypresses = KeypressHandler(self)
 
     def update(self) -> None:
@@ -68,15 +67,16 @@ class TouchscreenEventHandler(WebEventHandler):
     def __init__(self, display, brush, window):
         super().__init__(display, brush, window)
         # for it to not interfere with three-finger gesture
-        self.zoom_delay = Delay(WebEventHandler.FPS / 4)
+        self.zoom_delay = Delay(self.FPS / 10, self.FPS / 10)
         self.zoom_delay.delay = self.zoom_delay.max_delay
-        self.zoom_delay.init_delay_decr(WebEventHandler.FPS / 10)
+        self.zoom_after_clear_delay = Delay(self.FPS / 2, self.FPS / 60)
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
         self.gestures = GestureHandler(self)
 
     def update(self):
-        self.not_zoom_delay.decr(); self.zoom_delay.decr()
+        self.not_zoom_delay.decr()
+        self.zoom_delay.decr(); self.zoom_after_clear_delay()
         if self.not_zoom_delay.is_over():
             self.brush.is_size_incr = 0
         self.brush.incr_size()
@@ -92,12 +92,16 @@ class TouchscreenEventHandler(WebEventHandler):
         self.fingers[event.finger_id] = event.dx, event.dy
         if len(self.fingers) == 3:
             self.gestures.fingermotion_3(event)
-            self.zoom_delay.reset()
+            self.zoom_after_clear_delay.reset()
 
     def multigesture(self, event):
         self.brush.is_drawing = False # no multi-finger drawing
         if event.pinched == 0.0: return
-        if (event.num_fingers == 2) and (self.zoom_delay.is_over()): 
+        if (
+            event.num_fingers == 2 
+            and self.zoom_delay.is_over()
+            and self.zoom_after_clear_delay.is_over()
+        ): 
             self.gestures.multigesture_2(event)
             self.zoom_delay.reset()
 
