@@ -77,7 +77,7 @@ class TouchscreenEventHandler(WebEventHandler):
             self.brush.is_size_incr = 0
         self.brush.incr_size()
         self.brush.draw_texture()
-        if len(self.fingers) > 1: # when not drawing
+        if self.brush.is_size_incr: # when not drawing
             self.brush.draw_preview()
 
     def fingerdown(self, event: pygame.Event):
@@ -97,5 +97,5 @@ class TouchscreenEventHandler(WebEventHandler):
 
     def fingerup(self, event):
         self.fingers.pop(event.finger_id, None)
-        if len(self.fingers) == 0: 
-            self.brush.is_drawing = 0
+        # at least one finger to draw
+        self.brush.is_drawing = len(self.fingers) == 1

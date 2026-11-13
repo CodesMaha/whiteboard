@@ -26,7 +26,7 @@ class GestureHandler:
     """
     def __init__(self, mobile_event_handler: 'EventHandler'):
         self.events = mobile_event_handler
-        self.fingers: dict[int, tuple[int, int]] = self.events.fingers
+        self.fingers: dict[int, tuple[int, int] | None] = self.events.fingers
 
     def multigesture_2(self, event: pygame.Event) -> None:
         self.events.brush.is_size_incr = 2 * (event.pinched > 0) - 1
@@ -34,9 +34,9 @@ class GestureHandler:
 
     def fingermotion_3(self, _: pygame.Event) -> None:
         dy_positive = []
-        for dyx in self.fingers.values():
-            if dyx is None: return
-            dy_positive.append(dyx[1] > 0)
+        for dxy in self.fingers.values():
+            if dxy is None: return
+            dy_positive.append(dxy[1] > 0)
         if all(dy_positive): 
             self.events.display.fill("black")
             self.events.brush.set_reset_preview()

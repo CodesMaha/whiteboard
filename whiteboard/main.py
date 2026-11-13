@@ -46,6 +46,8 @@ class App:
             # mobile/touchscreen support (not properly tested)
             if event.type == pygame.FINGERDOWN:
                 self.events.fingerdown(event)
+            if event.type == pygame.FINGERMOTION:
+                self.events.fingermotion(event)
             if event.type == pygame.MULTIGESTURE:
                 self.events.multigesture(event)
             if event.type == pygame.FINGERUP:
