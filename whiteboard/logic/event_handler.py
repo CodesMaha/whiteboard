@@ -3,7 +3,6 @@
 import pygame
 from logic.key_gesture import KeypressHandler, GestureHandler
 from graphics import Brush
-from logic import Delay
 
 class EventHandler:
     """ handle native events (acting as base class) """
@@ -17,6 +16,7 @@ class EventHandler:
         self.brush.incr_size()
         self.brush.draw_texture()
         self.brush.draw_preview()
+        self.brush.is_size_incr = 0
 
     def mousewheel(self, event: pygame.Event) -> None:
         if event.touch: return
