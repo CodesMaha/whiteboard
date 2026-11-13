@@ -13,7 +13,10 @@ minimalist whiteboard run in the browser.
 
 # features
 this project is still under development, which means new features are still underway!
-+ adjusting brush size by scrolling up or down (similar motion to zooming in or out)
+| feature | desktop | mobile |
+| ------- | ------- | ------ |
+| brush size adjustment | scrolling up or down | zooming in or out |
+| clearing canvas | backspace or delete | swiping three fingers down |
 
 # building
 although the static build should already be [hosted online](https://mahacodes.codeberg.page/whiteboard/) using [Codeberg Pages](https://docs.codeberg.org/codeberg-pages/), this is a way to rebuild it locally.
