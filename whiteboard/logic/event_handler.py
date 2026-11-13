@@ -70,7 +70,7 @@ class TouchscreenEventHandler(WebEventHandler):
         # for it to not interfere with three-finger gesture
         self.zoom_delay = Delay(WebEventHandler.FPS / 30)
         self.zoom_delay.delay = self.zoom_delay.max_delay
-        self.zoom_delay.init_delay_decr(WebEventHandler.FPS / 60)
+        self.zoom_delay.init_delay_decr(WebEventHandler.FPS / 10)
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
         self.gestures = GestureHandler(self)
