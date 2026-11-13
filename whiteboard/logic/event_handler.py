@@ -92,6 +92,7 @@ class TouchscreenEventHandler(WebEventHandler):
         self.fingers[event.finger_id] = event.dx, event.dy
         if len(self.fingers) == 3:
             self.gestures.fingermotion_3(event)
+            self.zoom_delay.reset()
 
     def multigesture(self, event):
         self.brush.is_drawing = False # no multi-finger drawing
