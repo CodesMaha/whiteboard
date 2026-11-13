@@ -67,9 +67,9 @@ class TouchscreenEventHandler(WebEventHandler):
     """ handle web and touchscreen events (from pygbag) """
     def __init__(self, display, brush, window):
         super().__init__(display, brush, window)
-        self.gestures = GestureHandler(self)
         # dict[finger_id, tuple[dx, dy]] from fingermotion
         self.fingers: dict[int, tuple[int, int] | None] = {}
+        self.gestures = GestureHandler(self)
 
     def update(self):
         self.not_zoom_delay.decr()
