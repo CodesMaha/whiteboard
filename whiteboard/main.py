@@ -1,6 +1,6 @@
 """ where the entrypoint for pygbag lies by default """
 
-from sys import platform as sys_platform
+from config import colour, emscripten
 from graphics import Brush
 from logic import *
 import asyncio
@@ -11,7 +11,7 @@ class App:
         pygame.display.init()
         pygame.display.set_caption("whiteboard")
 
-        if sys_platform == "emscripten":
+        if emscripten:
             self.emscripten_setup()
         else:
             self.native_setup()
@@ -23,6 +23,7 @@ class App:
         """ extra init for browser (or mobile web specifically) """
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
+        display.fill(colour["black"]) # initial background colour
         window.Module.canvas2d.style.width, window.Module.canvas2d.style.width = display.size
         window.canvas.style.imageRendering = "pixelated"
         brush = Brush(display) # TODO: better mobile/touchscreen detection 
@@ -33,7 +34,7 @@ class App:
     def native_setup(self) -> None:
         """ extra init for native, local, or direct interpret """
         pygame.display.set_icon(pygame.image.load("favicon.png"))
-        display = pygame.display.set_mode((1066, 600))
+        display = pygame.display.set_mode((1066, 600)); display.fill(colour["black"])
         brush = Brush(display); self.events = EventHandler(display, brush)
 
     def step(self):
@@ -76,11 +77,10 @@ async def main() -> None:
             await asyncio.sleep(0)
 
     except Exception:
-        if sys_platform == "emscripten":
-            from platform import window
-            from traceback import format_exc
-            window.alert(format_exc()[-100:]) # otherwise hidden
-        else: raise # leave it
+        if not emscripten: raise # leave it
+        from platform import window 
+        from traceback import format_exc
+        window.alert(format_exc()[-100:]) # otherwise hidden
 
     finally:
         pygame.quit()

@@ -1,0 +1,8 @@
+[rgb] # r, g, and b
+black = 12
+light_gray = 121
+white = 222
+
+[hsv] # for hue slider
+s = 20
+v = 35

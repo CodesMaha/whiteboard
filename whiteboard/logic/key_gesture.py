@@ -5,6 +5,7 @@ if TYPE_CHECKING:
     from logic.event_handler import EventHandler, TouchscreenEventHandler
 
 import pygame
+from config import colour
 
 class KeypressHandler:
     """ handle actions for keydown events """
@@ -13,7 +14,7 @@ class KeypressHandler:
 
     def keydown(self, event: pygame.Event) -> None:
         if event.key in (pygame.K_BACKSPACE, pygame.K_DELETE): # clear
-            self.events.display.fill("black")
+            self.events.display.fill(colour["black"])
             self.events.brush.set_reset_preview()
 
     def emscripten_keydown(self, event: pygame.Event) -> None:
@@ -38,11 +39,5 @@ class GestureHandler:
             if dxy is None: return
             dy_positive.append(dxy[1] > 0)
         if all(dy_positive): 
-            self.events.display.fill("black")
+            self.events.display.fill(colour["black"])
             self.events.brush.set_reset_preview()
-
-# TODO: 
-# more keypress actions with more features
-# equivalent ui menu for said actions
-# make ui menu compulsory for mobile
-# make ui menu able to be hidden otherwise

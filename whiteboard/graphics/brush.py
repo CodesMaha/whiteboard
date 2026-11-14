@@ -1,6 +1,7 @@
 """ texture blit onto display, dest pygame.mouse """
 
 import pygame
+from config import colour
 from math import ceil
 from typing import Generator
 
@@ -13,8 +14,11 @@ class Brush:
         self.display = display
         self.set_reset_preview()
         self.is_drawing = False
+        self.colour = colour["white"]
+        """ colour of brush texture """
         self.size = display.height // 100
         self.is_size_incr = 0
+        """ 0 False; 1 True; -1 decr for self.size """
 
     @property
     def is_drawing(self) -> bool:
@@ -27,14 +31,6 @@ class Brush:
             self.prev_pos: P | None = pygame.Vector2(pygame.mouse.get_pos())
         else:
             self.prev_pos: None | P = None
-
-    @property
-    def is_size_incr(self) -> int:
-        """ 0 False; 1 True; -1 decr for self.size """
-        return self._is_size_incr
-    @is_size_incr.setter
-    def is_size_incr(self, new: int) -> None:
-        self._is_size_incr = new
 
     @property
     def size(self) -> int:
@@ -83,14 +79,14 @@ class Brush:
         di = lambda x: (x, x)
         self.texture = pygame.surface.Surface(di(self.size), pygame.SRCALPHA)
         pygame.draw.circle(
-            self.texture, "white", di(self.size // 2), self.size / 2
+            self.texture, self.colour, di(self.size // 2), self.size / 2
         )
 
     def draw_preview(self) -> None:
         """ let user preview self.size if self.is_size_incr """
         self.reset_preview()
         pygame.draw.circle(
-            self.display, "white", pygame.mouse.get_pos(), 
+            self.display, colour["light_gray"], pygame.mouse.get_pos(), 
             self.size / 2, 2
         )
     def set_reset_preview(self) -> None:
