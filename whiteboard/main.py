@@ -24,7 +24,8 @@ class App:
         from platform import window
         display = pygame.display.set_mode((window.innerWidth, window.innerHeight))
         display.fill(colour["black"]) # initial background colour
-        window.Module.canvas2d.style.width, window.Module.canvas2d.style.width = display.size
+        window.canvas.style.width = f"{display.width}px"
+        window.canvas.style.height = f"{display.height}px"
         window.canvas.style.imageRendering = "pixelated"
         brush = Brush(display) # TODO: better mobile/touchscreen detection 
         if window.screen.width < window.screen.height: # mobile
